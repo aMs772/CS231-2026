@@ -10,9 +10,12 @@ module triple_decoder (
     wire B = triple[1];
     wire C = triple[0];
 
-    assign valid =   /* V from your K-map */;
-    assign pair[1] = /* X from your K-map */;
-    assign pair[0] = /* Y from your K-map */;
+    // assign valid =   /* V from your K-map */;
+    // assign pair[1] = /* X from your K-map */;
+    // assign pair[0] = /* Y from your K-map */;
+    assign valid   = (~A & B) | (~B & C);
+    assign pair[1] = (B & C)  | (A & ~B);
+    assign pair[0] = (B & ~C) | (A & ~B);
 endmodule
 
 

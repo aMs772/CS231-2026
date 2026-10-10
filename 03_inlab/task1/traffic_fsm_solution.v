@@ -1,4 +1,4 @@
-module bhavesh_traffic_light (
+ module bhavesh_traffic_light (
     input clk, rst_n,
     input ped_button,
     input tick_1hz,

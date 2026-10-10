@@ -1,0 +1,1348 @@
+#! /usr/bin/vvp
+:ivl_version "12.0 (stable)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision - 9;
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/system.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_sys.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_textio.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/v2005_math.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/va_math.vpi";
+S_0x6160e8622480 .scope module, "tb_traffic_light" "tb_traffic_light" 2 3;
+ .timescale -9 -9;
+v0x6160e8648de0_0 .var "clk", 0 0;
+v0x6160e8648ef0_0 .var "dp_current_state", 1 0;
+v0x6160e8648fb0_0 .net "dp_do_transition", 0 0, v0x6160e8623c50_0;  1 drivers
+v0x6160e8649050_0 .var "dp_next_state", 1 0;
+v0x6160e8649120_0 .var "dp_ped_button", 0 0;
+v0x6160e8649210_0 .var "dp_ped_request", 0 0;
+v0x6160e86492e0_0 .var "dp_remaining", 7 0;
+v0x6160e86493b0_0 .net "dp_remaining_next", 7 0, v0x6160e8644230_0;  1 drivers
+v0x6160e8649480_0 .var "dp_tick", 0 0;
+v0x6160e86495e0_0 .net "duration_out", 7 0, L_0x6160e86242a0;  1 drivers
+v0x6160e86496b0_0 .net "green", 0 0, L_0x6160e864a000;  1 drivers
+v0x6160e8649750_0 .net "ld_green", 0 0, L_0x6160e864a320;  1 drivers
+v0x6160e86497f0_0 .net "ld_red", 0 0, L_0x6160e864a640;  1 drivers
+v0x6160e86498c0_0 .var "ld_state", 1 0;
+v0x6160e8649990_0 .net "ld_yellow", 0 0, L_0x6160e864a500;  1 drivers
+v0x6160e8649a60_0 .var "ped_button", 0 0;
+v0x6160e8649b00_0 .net "red", 0 0, L_0x6160e864a190;  1 drivers
+v0x6160e8649bf0_0 .var "rst_n", 0 0;
+v0x6160e8649ce0_0 .net "state_out", 1 0, L_0x6160e8622be0;  1 drivers
+v0x6160e8649d80_0 .var "state_str", 63 0;
+v0x6160e8649e20_0 .var "tick_1hz", 0 0;
+v0x6160e8649f10_0 .net "yellow", 0 0, L_0x6160e864a0a0;  1 drivers
+E_0x6160e85e6810 .event negedge, v0x6160e8646540_0;
+E_0x6160e85e4980 .event anyedge, v0x6160e86478a0_0;
+S_0x6160e8621da0 .scope task, "check_state" "check_state" 2 77, 2 77 0, S_0x6160e8622480;
+ .timescale -9 -9;
+v0x6160e86201e0_0 .var "context", 63 0;
+v0x6160e86203a0_0 .var "expected", 1 0;
+E_0x6160e85e5220 .event posedge, v0x6160e8646540_0;
+TD_tb_traffic_light.check_state ;
+    %wait E_0x6160e85e5220;
+    %delay 1, 0;
+    %load/vec4 v0x6160e8649ce0_0;
+    %load/vec4 v0x6160e86203a0_0;
+    %cmp/ne;
+    %jmp/0xz  T_0.0, 6;
+    %load/vec4 v0x6160e8649ce0_0;
+    %store/vec4 v0x6160e8648c00_0, 0, 2;
+    %callf/vec4 TD_tb_traffic_light.state_name, S_0x6160e8648a20;
+    %load/vec4 v0x6160e86203a0_0;
+    %store/vec4 v0x6160e8648c00_0, 0, 2;
+    %callf/vec4 TD_tb_traffic_light.state_name, S_0x6160e8648a20;
+    %vpi_call 2 83 "$display", "\011[ASSERT] %s -> FAIL: state=%s expected=%s", v0x6160e86201e0_0, S<1,vec4,u64>, S<0,vec4,u64> {2 0 0};
+    %jmp T_0.1;
+T_0.0 ;
+    %vpi_call 2 86 "$display", "\011[ASSERT] %s -> PASS", v0x6160e86201e0_0 {0 0 0};
+T_0.1 ;
+    %end;
+S_0x6160e8643b80 .scope module, "dp_dut" "duration_datapath" 2 31, 3 273 0, S_0x6160e8622480;
+ .timescale -9 -9;
+    .port_info 0 /INPUT 2 "current_state";
+    .port_info 1 /INPUT 2 "next_state";
+    .port_info 2 /INPUT 8 "remaining";
+    .port_info 3 /INPUT 1 "tick_1hz";
+    .port_info 4 /INPUT 1 "ped_button";
+    .port_info 5 /INPUT 1 "ped_request";
+    .port_info 6 /OUTPUT 8 "remaining_next";
+    .port_info 7 /OUTPUT 1 "do_transition";
+P_0x6160e8643d30 .param/l "GREEN" 1 3 285, C4<00>;
+P_0x6160e8643d70 .param/l "RED" 1 3 285, C4<10>;
+P_0x6160e8643db0 .param/l "YELLOW" 1 3 285, C4<01>;
+v0x6160e8622a70_0 .net "current_state", 1 0, v0x6160e8648ef0_0;  1 drivers
+v0x6160e8623c50_0 .var "do_transition", 0 0;
+v0x6160e8624390_0 .net "next_state", 1 0, v0x6160e8649050_0;  1 drivers
+v0x6160e85bb710_0 .net "ped_button", 0 0, v0x6160e8649120_0;  1 drivers
+v0x6160e85bba40_0 .net "ped_request", 0 0, v0x6160e8649210_0;  1 drivers
+v0x6160e8644150_0 .net "remaining", 7 0, v0x6160e86492e0_0;  1 drivers
+v0x6160e8644230_0 .var "remaining_next", 7 0;
+v0x6160e8644310_0 .net "tick_1hz", 0 0, v0x6160e8649480_0;  1 drivers
+E_0x6160e85e4e10/0 .event anyedge, v0x6160e8644150_0, v0x6160e8644310_0, v0x6160e8624390_0, v0x6160e85bba40_0;
+E_0x6160e85e4e10/1 .event anyedge, v0x6160e85bb710_0, v0x6160e8623c50_0, v0x6160e8622a70_0, v0x6160e8644230_0;
+E_0x6160e85e4e10 .event/or E_0x6160e85e4e10/0, E_0x6160e85e4e10/1;
+S_0x6160e8644520 .scope module, "dut" "bhavesh_traffic_light" 2 10, 3 166 0, S_0x6160e8622480;
+ .timescale -9 -9;
+    .port_info 0 /INPUT 1 "clk";
+    .port_info 1 /INPUT 1 "rst_n";
+    .port_info 2 /INPUT 1 "ped_button";
+    .port_info 3 /INPUT 1 "tick_1hz";
+    .port_info 4 /OUTPUT 2 "state_out";
+    .port_info 5 /OUTPUT 8 "duration_out";
+    .port_info 6 /OUTPUT 1 "red";
+    .port_info 7 /OUTPUT 1 "green";
+    .port_info 8 /OUTPUT 1 "yellow";
+L_0x6160e8622be0 .functor BUFZ 2, v0x6160e8646620_0, C4<00>, C4<00>, C4<00>;
+L_0x6160e86242a0 .functor BUFZ 8, v0x6160e8646b00_0, C4<00000000>, C4<00000000>, C4<00000000>;
+v0x6160e8646e40_0 .net "clk", 0 0, v0x6160e8648de0_0;  1 drivers
+v0x6160e8646f30_0 .net "current_state", 1 0, v0x6160e8646620_0;  1 drivers
+v0x6160e8646fd0_0 .net "do_transition", 0 0, v0x6160e86458e0_0;  1 drivers
+v0x6160e86470a0_0 .net "duration_out", 7 0, L_0x6160e86242a0;  alias, 1 drivers
+v0x6160e8647160_0 .net "green", 0 0, L_0x6160e864a000;  alias, 1 drivers
+v0x6160e8647250_0 .net "next_state", 1 0, L_0x6160e8622960;  1 drivers
+v0x6160e8647340_0 .net "ped_button", 0 0, v0x6160e8649a60_0;  1 drivers
+v0x6160e8647430_0 .net "ped_request", 0 0, v0x6160e8646a30_0;  1 drivers
+v0x6160e8647520_0 .net "red", 0 0, L_0x6160e864a190;  alias, 1 drivers
+v0x6160e8647650_0 .net "remaining", 7 0, v0x6160e8646b00_0;  1 drivers
+v0x6160e86476f0_0 .net "remaining_next", 7 0, v0x6160e8645cf0_0;  1 drivers
+v0x6160e8647800_0 .net "rst_n", 0 0, v0x6160e8649bf0_0;  1 drivers
+v0x6160e86478a0_0 .net "state_out", 1 0, L_0x6160e8622be0;  alias, 1 drivers
+v0x6160e8647960_0 .net "tick_1hz", 0 0, v0x6160e8649e20_0;  1 drivers
+v0x6160e8647a00_0 .net "yellow", 0 0, L_0x6160e864a0a0;  alias, 1 drivers
+S_0x6160e86447e0 .scope module, "decoder" "output_decoder" 3 204, 3 324 0, S_0x6160e8644520;
+ .timescale -9 -9;
+    .port_info 0 /INPUT 2 "state";
+    .port_info 1 /OUTPUT 1 "red";
+    .port_info 2 /OUTPUT 1 "green";
+    .port_info 3 /OUTPUT 1 "yellow";
+P_0x6160e86449c0 .param/l "GREEN" 1 3 329, C4<00>;
+P_0x6160e8644a00 .param/l "RED" 1 3 329, C4<10>;
+P_0x6160e8644a40 .param/l "YELLOW" 1 3 329, C4<01>;
+L_0x7f79dd29d018 .functor BUFT 1, C4<00>, C4<0>, C4<0>, C4<0>;
+v0x6160e8644c00_0 .net/2u *"_ivl_0", 1 0, L_0x7f79dd29d018;  1 drivers
+L_0x7f79dd29d060 .functor BUFT 1, C4<01>, C4<0>, C4<0>, C4<0>;
+v0x6160e8644ce0_0 .net/2u *"_ivl_4", 1 0, L_0x7f79dd29d060;  1 drivers
+L_0x7f79dd29d0a8 .functor BUFT 1, C4<10>, C4<0>, C4<0>, C4<0>;
+v0x6160e8644dc0_0 .net/2u *"_ivl_8", 1 0, L_0x7f79dd29d0a8;  1 drivers
+v0x6160e8644e80_0 .net "green", 0 0, L_0x6160e864a000;  alias, 1 drivers
+v0x6160e8644f40_0 .net "red", 0 0, L_0x6160e864a190;  alias, 1 drivers
+v0x6160e8645050_0 .net "state", 1 0, v0x6160e8646620_0;  alias, 1 drivers
+v0x6160e8645130_0 .net "yellow", 0 0, L_0x6160e864a0a0;  alias, 1 drivers
+L_0x6160e864a000 .cmp/eq 2, v0x6160e8646620_0, L_0x7f79dd29d018;
+L_0x6160e864a0a0 .cmp/eq 2, v0x6160e8646620_0, L_0x7f79dd29d060;
+L_0x6160e864a190 .cmp/eq 2, v0x6160e8646620_0, L_0x7f79dd29d0a8;
+S_0x6160e8645270 .scope module, "dp" "duration_datapath" 3 193, 3 273 0, S_0x6160e8644520;
+ .timescale -9 -9;
+    .port_info 0 /INPUT 2 "current_state";
+    .port_info 1 /INPUT 2 "next_state";
+    .port_info 2 /INPUT 8 "remaining";
+    .port_info 3 /INPUT 1 "tick_1hz";
+    .port_info 4 /INPUT 1 "ped_button";
+    .port_info 5 /INPUT 1 "ped_request";
+    .port_info 6 /OUTPUT 8 "remaining_next";
+    .port_info 7 /OUTPUT 1 "do_transition";
+P_0x6160e8645470 .param/l "GREEN" 1 3 285, C4<00>;
+P_0x6160e86454b0 .param/l "RED" 1 3 285, C4<10>;
+P_0x6160e86454f0 .param/l "YELLOW" 1 3 285, C4<01>;
+v0x6160e8645800_0 .net "current_state", 1 0, v0x6160e8646620_0;  alias, 1 drivers
+v0x6160e86458e0_0 .var "do_transition", 0 0;
+v0x6160e8645980_0 .net "next_state", 1 0, L_0x6160e8622960;  alias, 1 drivers
+v0x6160e8645a40_0 .net "ped_button", 0 0, v0x6160e8649a60_0;  alias, 1 drivers
+v0x6160e8645b00_0 .net "ped_request", 0 0, v0x6160e8646a30_0;  alias, 1 drivers
+v0x6160e8645c10_0 .net "remaining", 7 0, v0x6160e8646b00_0;  alias, 1 drivers
+v0x6160e8645cf0_0 .var "remaining_next", 7 0;
+v0x6160e8645dd0_0 .net "tick_1hz", 0 0, v0x6160e8649e20_0;  alias, 1 drivers
+E_0x6160e85e5e90/0 .event anyedge, v0x6160e8645c10_0, v0x6160e8645dd0_0, v0x6160e8645980_0, v0x6160e8645b00_0;
+E_0x6160e85e5e90/1 .event anyedge, v0x6160e8645a40_0, v0x6160e86458e0_0, v0x6160e8645050_0, v0x6160e8645cf0_0;
+E_0x6160e85e5e90 .event/or E_0x6160e85e5e90/0, E_0x6160e85e5e90/1;
+S_0x6160e8645fe0 .scope module, "fsm" "traffic_fsm" 3 181, 3 220 0, S_0x6160e8644520;
+ .timescale -9 -9;
+    .port_info 0 /INPUT 1 "clk";
+    .port_info 1 /INPUT 1 "rst_n";
+    .port_info 2 /INPUT 1 "ped_button";
+    .port_info 3 /INPUT 8 "remaining_next";
+    .port_info 4 /INPUT 1 "do_transition";
+    .port_info 5 /OUTPUT 2 "current_state";
+    .port_info 6 /OUTPUT 2 "next_state";
+    .port_info 7 /OUTPUT 8 "remaining";
+    .port_info 8 /OUTPUT 1 "ped_request";
+P_0x6160e8646170 .param/l "GREEN" 1 3 232, C4<00>;
+P_0x6160e86461b0 .param/l "RED" 1 3 232, C4<10>;
+P_0x6160e86461f0 .param/l "YELLOW" 1 3 232, C4<01>;
+L_0x6160e8622960 .functor BUFZ 2, v0x6160e86468a0_0, C4<00>, C4<00>, C4<00>;
+v0x6160e8646540_0 .net "clk", 0 0, v0x6160e8648de0_0;  alias, 1 drivers
+v0x6160e8646620_0 .var "current_state", 1 0;
+v0x6160e8646730_0 .net "do_transition", 0 0, v0x6160e86458e0_0;  alias, 1 drivers
+v0x6160e86467d0_0 .net "next_state", 1 0, L_0x6160e8622960;  alias, 1 drivers
+v0x6160e86468a0_0 .var "next_state_r", 1 0;
+v0x6160e8646990_0 .net "ped_button", 0 0, v0x6160e8649a60_0;  alias, 1 drivers
+v0x6160e8646a30_0 .var "ped_request", 0 0;
+v0x6160e8646b00_0 .var "remaining", 7 0;
+v0x6160e8646bd0_0 .net "remaining_next", 7 0, v0x6160e8645cf0_0;  alias, 1 drivers
+v0x6160e8646ca0_0 .net "rst_n", 0 0, v0x6160e8649bf0_0;  alias, 1 drivers
+E_0x6160e85ac290/0 .event negedge, v0x6160e8646ca0_0;
+E_0x6160e85ac290/1 .event posedge, v0x6160e8646540_0;
+E_0x6160e85ac290 .event/or E_0x6160e85ac290/0, E_0x6160e85ac290/1;
+E_0x6160e86464e0 .event anyedge, v0x6160e8645050_0;
+S_0x6160e8647bd0 .scope task, "fire_ticks" "fire_ticks" 2 66, 2 66 0, S_0x6160e8622480;
+ .timescale -9 -9;
+v0x6160e8647d60_0 .var/i "i", 31 0;
+v0x6160e8647e60_0 .var/i "n", 31 0;
+TD_tb_traffic_light.fire_ticks ;
+    %pushi/vec4 0, 0, 32;
+    %store/vec4 v0x6160e8647d60_0, 0, 32;
+T_1.2 ;
+    %load/vec4 v0x6160e8647d60_0;
+    %load/vec4 v0x6160e8647e60_0;
+    %cmp/s;
+    %jmp/0xz T_1.3, 5;
+    %wait E_0x6160e85e5220;
+    %pushi/vec4 1, 0, 1;
+    %assign/vec4 v0x6160e8649e20_0, 0;
+    %wait E_0x6160e85e5220;
+    %pushi/vec4 0, 0, 1;
+    %assign/vec4 v0x6160e8649e20_0, 0;
+    %load/vec4 v0x6160e8647d60_0;
+    %addi 1, 0, 32;
+    %store/vec4 v0x6160e8647d60_0, 0, 32;
+    %jmp T_1.2;
+T_1.3 ;
+    %end;
+S_0x6160e8647f40 .scope module, "ld_dut" "output_decoder" 2 45, 3 324 0, S_0x6160e8622480;
+ .timescale -9 -9;
+    .port_info 0 /INPUT 2 "state";
+    .port_info 1 /OUTPUT 1 "red";
+    .port_info 2 /OUTPUT 1 "green";
+    .port_info 3 /OUTPUT 1 "yellow";
+P_0x6160e8648170 .param/l "GREEN" 1 3 329, C4<00>;
+P_0x6160e86481b0 .param/l "RED" 1 3 329, C4<10>;
+P_0x6160e86481f0 .param/l "YELLOW" 1 3 329, C4<01>;
+L_0x7f79dd29d0f0 .functor BUFT 1, C4<00>, C4<0>, C4<0>, C4<0>;
+v0x6160e86483b0_0 .net/2u *"_ivl_0", 1 0, L_0x7f79dd29d0f0;  1 drivers
+L_0x7f79dd29d138 .functor BUFT 1, C4<01>, C4<0>, C4<0>, C4<0>;
+v0x6160e8648490_0 .net/2u *"_ivl_4", 1 0, L_0x7f79dd29d138;  1 drivers
+L_0x7f79dd29d180 .functor BUFT 1, C4<10>, C4<0>, C4<0>, C4<0>;
+v0x6160e8648570_0 .net/2u *"_ivl_8", 1 0, L_0x7f79dd29d180;  1 drivers
+v0x6160e8648630_0 .net "green", 0 0, L_0x6160e864a320;  alias, 1 drivers
+v0x6160e86486f0_0 .net "red", 0 0, L_0x6160e864a640;  alias, 1 drivers
+v0x6160e8648800_0 .net "state", 1 0, v0x6160e86498c0_0;  1 drivers
+v0x6160e86488e0_0 .net "yellow", 0 0, L_0x6160e864a500;  alias, 1 drivers
+L_0x6160e864a320 .cmp/eq 2, v0x6160e86498c0_0, L_0x7f79dd29d0f0;
+L_0x6160e864a500 .cmp/eq 2, v0x6160e86498c0_0, L_0x7f79dd29d138;
+L_0x6160e864a640 .cmp/eq 2, v0x6160e86498c0_0, L_0x7f79dd29d180;
+S_0x6160e8648a20 .scope function.vec4.s64, "state_name" "state_name" 2 54, 2 54 0, S_0x6160e8622480;
+ .timescale -9 -9;
+v0x6160e8648c00_0 .var "s", 1 0;
+; Variable state_name is vec4 return value of scope S_0x6160e8648a20
+TD_tb_traffic_light.state_name ;
+    %load/vec4 v0x6160e8648c00_0;
+    %dup/vec4;
+    %pushi/vec4 0, 0, 2;
+    %cmp/u;
+    %jmp/1 T_2.4, 6;
+    %dup/vec4;
+    %pushi/vec4 1, 0, 2;
+    %cmp/u;
+    %jmp/1 T_2.5, 6;
+    %dup/vec4;
+    %pushi/vec4 2, 0, 2;
+    %cmp/u;
+    %jmp/1 T_2.6, 6;
+    %pushi/vec4 16191, 0, 32; draw_string_vec4
+    %pushi/vec4 1059069984, 0, 32; draw_string_vec4
+    %concat/vec4; draw_string_vec4
+    %ret/vec4 0, 0, 64;  Assign to state_name (store_vec4_to_lval)
+    %jmp T_2.8;
+T_2.4 ;
+    %pushi/vec4 18258, 0, 32; draw_string_vec4
+    %pushi/vec4 1162169888, 0, 32; draw_string_vec4
+    %concat/vec4; draw_string_vec4
+    %ret/vec4 0, 0, 64;  Assign to state_name (store_vec4_to_lval)
+    %jmp T_2.8;
+T_2.5 ;
+    %pushi/vec4 22853, 0, 32; draw_string_vec4
+    %pushi/vec4 1280069463, 0, 32; draw_string_vec4
+    %concat/vec4; draw_string_vec4
+    %ret/vec4 0, 0, 64;  Assign to state_name (store_vec4_to_lval)
+    %jmp T_2.8;
+T_2.6 ;
+    %pushi/vec4 21061, 0, 32; draw_string_vec4
+    %pushi/vec4 1142956064, 0, 32; draw_string_vec4
+    %concat/vec4; draw_string_vec4
+    %ret/vec4 0, 0, 64;  Assign to state_name (store_vec4_to_lval)
+    %jmp T_2.8;
+T_2.8 ;
+    %pop/vec4 1;
+    %end;
+    .scope S_0x6160e8645fe0;
+T_3 ;
+    %wait E_0x6160e86464e0;
+    %load/vec4 v0x6160e8646620_0;
+    %dup/vec4;
+    %pushi/vec4 0, 0, 2;
+    %cmp/u;
+    %jmp/1 T_3.0, 6;
+    %dup/vec4;
+    %pushi/vec4 1, 0, 2;
+    %cmp/u;
+    %jmp/1 T_3.1, 6;
+    %dup/vec4;
+    %pushi/vec4 2, 0, 2;
+    %cmp/u;
+    %jmp/1 T_3.2, 6;
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e86468a0_0, 0, 2;
+    %jmp T_3.4;
+T_3.0 ;
+    %pushi/vec4 1, 0, 2;
+    %store/vec4 v0x6160e86468a0_0, 0, 2;
+    %jmp T_3.4;
+T_3.1 ;
+    %pushi/vec4 2, 0, 2;
+    %store/vec4 v0x6160e86468a0_0, 0, 2;
+    %jmp T_3.4;
+T_3.2 ;
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e86468a0_0, 0, 2;
+    %jmp T_3.4;
+T_3.4 ;
+    %pop/vec4 1;
+    %jmp T_3;
+    .thread T_3, $push;
+    .scope S_0x6160e8645fe0;
+T_4 ;
+    %wait E_0x6160e85ac290;
+    %load/vec4 v0x6160e8646ca0_0;
+    %nor/r;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_4.0, 8;
+    %pushi/vec4 0, 0, 2;
+    %assign/vec4 v0x6160e8646620_0, 0;
+    %pushi/vec4 25, 0, 8;
+    %assign/vec4 v0x6160e8646b00_0, 0;
+    %pushi/vec4 0, 0, 1;
+    %assign/vec4 v0x6160e8646a30_0, 0;
+    %jmp T_4.1;
+T_4.0 ;
+    %load/vec4 v0x6160e8646990_0;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_4.2, 8;
+    %pushi/vec4 1, 0, 1;
+    %assign/vec4 v0x6160e8646a30_0, 0;
+T_4.2 ;
+    %load/vec4 v0x6160e8646bd0_0;
+    %assign/vec4 v0x6160e8646b00_0, 0;
+    %load/vec4 v0x6160e8646730_0;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_4.4, 8;
+    %load/vec4 v0x6160e86467d0_0;
+    %assign/vec4 v0x6160e8646620_0, 0;
+    %load/vec4 v0x6160e86467d0_0;
+    %cmpi/e 0, 0, 2;
+    %jmp/0xz  T_4.6, 4;
+    %pushi/vec4 0, 0, 1;
+    %assign/vec4 v0x6160e8646a30_0, 0;
+T_4.6 ;
+T_4.4 ;
+T_4.1 ;
+    %jmp T_4;
+    .thread T_4;
+    .scope S_0x6160e8645270;
+T_5 ;
+    %wait E_0x6160e85e5e90;
+    %load/vec4 v0x6160e8645c10_0;
+    %store/vec4 v0x6160e8645cf0_0, 0, 8;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e86458e0_0, 0, 1;
+    %load/vec4 v0x6160e8645dd0_0;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_5.0, 8;
+    %load/vec4 v0x6160e8645c10_0;
+    %pad/u 32;
+    %cmpi/u 1, 0, 32;
+    %flag_or 5, 4; GT is !LE
+    %flag_inv 5;
+    %jmp/0xz  T_5.2, 5;
+    %load/vec4 v0x6160e8645c10_0;
+    %subi 1, 0, 8;
+    %store/vec4 v0x6160e8645cf0_0, 0, 8;
+    %jmp T_5.3;
+T_5.2 ;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e86458e0_0, 0, 1;
+    %load/vec4 v0x6160e8645980_0;
+    %dup/vec4;
+    %pushi/vec4 0, 0, 2;
+    %cmp/u;
+    %jmp/1 T_5.4, 6;
+    %dup/vec4;
+    %pushi/vec4 1, 0, 2;
+    %cmp/u;
+    %jmp/1 T_5.5, 6;
+    %dup/vec4;
+    %pushi/vec4 2, 0, 2;
+    %cmp/u;
+    %jmp/1 T_5.6, 6;
+    %pushi/vec4 25, 0, 8;
+    %store/vec4 v0x6160e8645cf0_0, 0, 8;
+    %jmp T_5.8;
+T_5.4 ;
+    %pushi/vec4 25, 0, 8;
+    %store/vec4 v0x6160e8645cf0_0, 0, 8;
+    %jmp T_5.8;
+T_5.5 ;
+    %pushi/vec4 5, 0, 8;
+    %store/vec4 v0x6160e8645cf0_0, 0, 8;
+    %jmp T_5.8;
+T_5.6 ;
+    %load/vec4 v0x6160e8645b00_0;
+    %flag_set/vec4 8;
+    %jmp/0 T_5.9, 8;
+    %pushi/vec4 40, 0, 8;
+    %jmp/1 T_5.10, 8;
+T_5.9 ; End of true expr.
+    %pushi/vec4 30, 0, 8;
+    %jmp/0 T_5.10, 8;
+ ; End of false expr.
+    %blend;
+T_5.10;
+    %store/vec4 v0x6160e8645cf0_0, 0, 8;
+    %jmp T_5.8;
+T_5.8 ;
+    %pop/vec4 1;
+T_5.3 ;
+T_5.0 ;
+    %load/vec4 v0x6160e8645a40_0;
+    %flag_set/vec4 10;
+    %flag_get/vec4 10;
+    %jmp/0 T_5.14, 10;
+    %load/vec4 v0x6160e8645b00_0;
+    %nor/r;
+    %and;
+T_5.14;
+    %flag_set/vec4 9;
+    %flag_get/vec4 9;
+    %jmp/0 T_5.13, 9;
+    %load/vec4 v0x6160e86458e0_0;
+    %nor/r;
+    %and;
+T_5.13;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_5.11, 8;
+    %load/vec4 v0x6160e8645800_0;
+    %cmpi/e 0, 0, 2;
+    %jmp/0xz  T_5.15, 4;
+    %load/vec4 v0x6160e8645cf0_0;
+    %cmpi/u 10, 0, 8;
+    %flag_or 5, 4; GT is !LE
+    %flag_inv 5;
+    %flag_mov 8, 5;
+    %jmp/0 T_5.17, 8;
+    %load/vec4 v0x6160e8645cf0_0;
+    %subi 10, 0, 8;
+    %jmp/1 T_5.18, 8;
+T_5.17 ; End of true expr.
+    %pushi/vec4 1, 0, 8;
+    %jmp/0 T_5.18, 8;
+ ; End of false expr.
+    %blend;
+T_5.18;
+    %store/vec4 v0x6160e8645cf0_0, 0, 8;
+    %jmp T_5.16;
+T_5.15 ;
+    %load/vec4 v0x6160e8645800_0;
+    %cmpi/e 2, 0, 2;
+    %jmp/0xz  T_5.19, 4;
+    %load/vec4 v0x6160e8645cf0_0;
+    %addi 10, 0, 8;
+    %store/vec4 v0x6160e8645cf0_0, 0, 8;
+T_5.19 ;
+T_5.16 ;
+T_5.11 ;
+    %jmp T_5;
+    .thread T_5, $push;
+    .scope S_0x6160e8643b80;
+T_6 ;
+    %wait E_0x6160e85e4e10;
+    %load/vec4 v0x6160e8644150_0;
+    %store/vec4 v0x6160e8644230_0, 0, 8;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8623c50_0, 0, 1;
+    %load/vec4 v0x6160e8644310_0;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_6.0, 8;
+    %load/vec4 v0x6160e8644150_0;
+    %pad/u 32;
+    %cmpi/u 1, 0, 32;
+    %flag_or 5, 4; GT is !LE
+    %flag_inv 5;
+    %jmp/0xz  T_6.2, 5;
+    %load/vec4 v0x6160e8644150_0;
+    %subi 1, 0, 8;
+    %store/vec4 v0x6160e8644230_0, 0, 8;
+    %jmp T_6.3;
+T_6.2 ;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8623c50_0, 0, 1;
+    %load/vec4 v0x6160e8624390_0;
+    %dup/vec4;
+    %pushi/vec4 0, 0, 2;
+    %cmp/u;
+    %jmp/1 T_6.4, 6;
+    %dup/vec4;
+    %pushi/vec4 1, 0, 2;
+    %cmp/u;
+    %jmp/1 T_6.5, 6;
+    %dup/vec4;
+    %pushi/vec4 2, 0, 2;
+    %cmp/u;
+    %jmp/1 T_6.6, 6;
+    %pushi/vec4 25, 0, 8;
+    %store/vec4 v0x6160e8644230_0, 0, 8;
+    %jmp T_6.8;
+T_6.4 ;
+    %pushi/vec4 25, 0, 8;
+    %store/vec4 v0x6160e8644230_0, 0, 8;
+    %jmp T_6.8;
+T_6.5 ;
+    %pushi/vec4 5, 0, 8;
+    %store/vec4 v0x6160e8644230_0, 0, 8;
+    %jmp T_6.8;
+T_6.6 ;
+    %load/vec4 v0x6160e85bba40_0;
+    %flag_set/vec4 8;
+    %jmp/0 T_6.9, 8;
+    %pushi/vec4 40, 0, 8;
+    %jmp/1 T_6.10, 8;
+T_6.9 ; End of true expr.
+    %pushi/vec4 30, 0, 8;
+    %jmp/0 T_6.10, 8;
+ ; End of false expr.
+    %blend;
+T_6.10;
+    %store/vec4 v0x6160e8644230_0, 0, 8;
+    %jmp T_6.8;
+T_6.8 ;
+    %pop/vec4 1;
+T_6.3 ;
+T_6.0 ;
+    %load/vec4 v0x6160e85bb710_0;
+    %flag_set/vec4 10;
+    %flag_get/vec4 10;
+    %jmp/0 T_6.14, 10;
+    %load/vec4 v0x6160e85bba40_0;
+    %nor/r;
+    %and;
+T_6.14;
+    %flag_set/vec4 9;
+    %flag_get/vec4 9;
+    %jmp/0 T_6.13, 9;
+    %load/vec4 v0x6160e8623c50_0;
+    %nor/r;
+    %and;
+T_6.13;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_6.11, 8;
+    %load/vec4 v0x6160e8622a70_0;
+    %cmpi/e 0, 0, 2;
+    %jmp/0xz  T_6.15, 4;
+    %load/vec4 v0x6160e8644230_0;
+    %cmpi/u 10, 0, 8;
+    %flag_or 5, 4; GT is !LE
+    %flag_inv 5;
+    %flag_mov 8, 5;
+    %jmp/0 T_6.17, 8;
+    %load/vec4 v0x6160e8644230_0;
+    %subi 10, 0, 8;
+    %jmp/1 T_6.18, 8;
+T_6.17 ; End of true expr.
+    %pushi/vec4 1, 0, 8;
+    %jmp/0 T_6.18, 8;
+ ; End of false expr.
+    %blend;
+T_6.18;
+    %store/vec4 v0x6160e8644230_0, 0, 8;
+    %jmp T_6.16;
+T_6.15 ;
+    %load/vec4 v0x6160e8622a70_0;
+    %cmpi/e 2, 0, 2;
+    %jmp/0xz  T_6.19, 4;
+    %load/vec4 v0x6160e8644230_0;
+    %addi 10, 0, 8;
+    %store/vec4 v0x6160e8644230_0, 0, 8;
+T_6.19 ;
+T_6.16 ;
+T_6.11 ;
+    %jmp T_6;
+    .thread T_6, $push;
+    .scope S_0x6160e8622480;
+T_7 ;
+    %delay 5, 0;
+    %load/vec4 v0x6160e8648de0_0;
+    %inv;
+    %store/vec4 v0x6160e8648de0_0, 0, 1;
+    %jmp T_7;
+    .thread T_7;
+    .scope S_0x6160e8622480;
+T_8 ;
+    %vpi_call 2 91 "$dumpfile", "task1.vcd" {0 0 0};
+    %vpi_call 2 92 "$dumpvars", 32'sb00000000000000000000000000000000, S_0x6160e8622480 {0 0 0};
+    %end;
+    .thread T_8;
+    .scope S_0x6160e8622480;
+T_9 ;
+    %wait E_0x6160e85e4980;
+    %load/vec4 v0x6160e8649ce0_0;
+    %store/vec4 v0x6160e8648c00_0, 0, 2;
+    %callf/vec4 TD_tb_traffic_light.state_name, S_0x6160e8648a20;
+    %store/vec4 v0x6160e8649d80_0, 0, 64;
+    %jmp T_9;
+    .thread T_9, $push;
+    .scope S_0x6160e8622480;
+T_10 ;
+    %vpi_call 2 99 "$monitor", "t=%6d | tick=%b | state=%s remaining=%3d | R=%b G=%b Y=%b | ped=%b | request=%b", $time, v0x6160e8649e20_0, v0x6160e8649d80_0, v0x6160e86495e0_0, v0x6160e8649b00_0, v0x6160e86496b0_0, v0x6160e8649f10_0, v0x6160e8649a60_0, v0x6160e8647430_0 {0 0 0};
+    %end;
+    .thread T_10;
+    .scope S_0x6160e8622480;
+T_11 ;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8648de0_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649bf0_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649a60_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649e20_0, 0, 1;
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e8648ef0_0, 0, 2;
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e8649050_0, 0, 2;
+    %pushi/vec4 0, 0, 8;
+    %store/vec4 v0x6160e86492e0_0, 0, 8;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649480_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649120_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649210_0, 0, 1;
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e86498c0_0, 0, 2;
+    %vpi_call 2 128 "$display", "\012=== UNIT TEST: duration_datapath ===" {0 0 0};
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e8648ef0_0, 0, 2;
+    %pushi/vec4 1, 0, 2;
+    %store/vec4 v0x6160e8649050_0, 0, 2;
+    %pushi/vec4 20, 0, 8;
+    %store/vec4 v0x6160e86492e0_0, 0, 8;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649480_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649120_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649210_0, 0, 1;
+    %delay 1, 0;
+    %load/vec4 v0x6160e86493b0_0;
+    %cmpi/e 20, 0, 8;
+    %flag_get/vec4 6;
+    %jmp/0 T_11.2, 6;
+    %load/vec4 v0x6160e8648fb0_0;
+    %pushi/vec4 0, 0, 1;
+    %cmp/e;
+    %flag_get/vec4 6;
+    %and;
+T_11.2;
+    %flag_set/vec4 8;
+    %jmp/0 T_11.0, 8;
+    %pushi/vec4 1346458451, 0, 32; draw_string_vec4
+    %jmp/1 T_11.1, 8;
+T_11.0 ; End of true expr.
+    %pushi/vec4 1178683724, 0, 32; draw_string_vec4
+    %jmp/0 T_11.1, 8;
+ ; End of false expr.
+    %blend;
+T_11.1;
+    %vpi_call 2 134 "$display", "  idle, GREEN rem=20        | remaining_next=%0d (exp 20) do_transition=%b (exp 0) | %s", v0x6160e86493b0_0, v0x6160e8648fb0_0, S<0,vec4,u32> {1 0 0};
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e8648ef0_0, 0, 2;
+    %pushi/vec4 1, 0, 2;
+    %store/vec4 v0x6160e8649050_0, 0, 2;
+    %pushi/vec4 20, 0, 8;
+    %store/vec4 v0x6160e86492e0_0, 0, 8;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649480_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649120_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649210_0, 0, 1;
+    %delay 1, 0;
+    %load/vec4 v0x6160e86493b0_0;
+    %cmpi/e 19, 0, 8;
+    %flag_get/vec4 6;
+    %jmp/0 T_11.5, 6;
+    %load/vec4 v0x6160e8648fb0_0;
+    %pushi/vec4 0, 0, 1;
+    %cmp/e;
+    %flag_get/vec4 6;
+    %and;
+T_11.5;
+    %flag_set/vec4 8;
+    %jmp/0 T_11.3, 8;
+    %pushi/vec4 1346458451, 0, 32; draw_string_vec4
+    %jmp/1 T_11.4, 8;
+T_11.3 ; End of true expr.
+    %pushi/vec4 1178683724, 0, 32; draw_string_vec4
+    %jmp/0 T_11.4, 8;
+ ; End of false expr.
+    %blend;
+T_11.4;
+    %vpi_call 2 142 "$display", "  tick, GREEN rem=20->19    | remaining_next=%0d (exp 19) do_transition=%b (exp 0) | %s", v0x6160e86493b0_0, v0x6160e8648fb0_0, S<0,vec4,u32> {1 0 0};
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e8648ef0_0, 0, 2;
+    %pushi/vec4 1, 0, 2;
+    %store/vec4 v0x6160e8649050_0, 0, 2;
+    %pushi/vec4 1, 0, 8;
+    %store/vec4 v0x6160e86492e0_0, 0, 8;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649480_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649120_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649210_0, 0, 1;
+    %delay 1, 0;
+    %load/vec4 v0x6160e86493b0_0;
+    %cmpi/e 5, 0, 8;
+    %flag_get/vec4 6;
+    %jmp/0 T_11.8, 6;
+    %load/vec4 v0x6160e8648fb0_0;
+    %pushi/vec4 1, 0, 1;
+    %cmp/e;
+    %flag_get/vec4 6;
+    %and;
+T_11.8;
+    %flag_set/vec4 8;
+    %jmp/0 T_11.6, 8;
+    %pushi/vec4 1346458451, 0, 32; draw_string_vec4
+    %jmp/1 T_11.7, 8;
+T_11.6 ; End of true expr.
+    %pushi/vec4 1178683724, 0, 32; draw_string_vec4
+    %jmp/0 T_11.7, 8;
+ ; End of false expr.
+    %blend;
+T_11.7;
+    %vpi_call 2 150 "$display", "  last tick, GREEN->YELLOW  | remaining_next=%0d (exp 5) do_transition=%b (exp 1) | %s", v0x6160e86493b0_0, v0x6160e8648fb0_0, S<0,vec4,u32> {1 0 0};
+    %pushi/vec4 1, 0, 2;
+    %store/vec4 v0x6160e8648ef0_0, 0, 2;
+    %pushi/vec4 2, 0, 2;
+    %store/vec4 v0x6160e8649050_0, 0, 2;
+    %pushi/vec4 1, 0, 8;
+    %store/vec4 v0x6160e86492e0_0, 0, 8;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649480_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649120_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649210_0, 0, 1;
+    %delay 1, 0;
+    %load/vec4 v0x6160e86493b0_0;
+    %cmpi/e 30, 0, 8;
+    %flag_mov 8, 6;
+    %jmp/0 T_11.9, 8;
+    %pushi/vec4 1346458451, 0, 32; draw_string_vec4
+    %jmp/1 T_11.10, 8;
+T_11.9 ; End of true expr.
+    %pushi/vec4 1178683724, 0, 32; draw_string_vec4
+    %jmp/0 T_11.10, 8;
+ ; End of false expr.
+    %blend;
+T_11.10;
+    %vpi_call 2 158 "$display", "  last tick, YELLOW->RED ped=0 | remaining_next=%0d (exp 30) | %s", v0x6160e86493b0_0, S<0,vec4,u32> {1 0 0};
+    %pushi/vec4 1, 0, 2;
+    %store/vec4 v0x6160e8648ef0_0, 0, 2;
+    %pushi/vec4 2, 0, 2;
+    %store/vec4 v0x6160e8649050_0, 0, 2;
+    %pushi/vec4 1, 0, 8;
+    %store/vec4 v0x6160e86492e0_0, 0, 8;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649480_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649120_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649210_0, 0, 1;
+    %delay 1, 0;
+    %load/vec4 v0x6160e86493b0_0;
+    %cmpi/e 40, 0, 8;
+    %flag_mov 8, 6;
+    %jmp/0 T_11.11, 8;
+    %pushi/vec4 1346458451, 0, 32; draw_string_vec4
+    %jmp/1 T_11.12, 8;
+T_11.11 ; End of true expr.
+    %pushi/vec4 1178683724, 0, 32; draw_string_vec4
+    %jmp/0 T_11.12, 8;
+ ; End of false expr.
+    %blend;
+T_11.12;
+    %vpi_call 2 165 "$display", "  last tick, YELLOW->RED ped=1 | remaining_next=%0d (exp 40) | %s", v0x6160e86493b0_0, S<0,vec4,u32> {1 0 0};
+    %pushi/vec4 2, 0, 2;
+    %store/vec4 v0x6160e8648ef0_0, 0, 2;
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e8649050_0, 0, 2;
+    %pushi/vec4 1, 0, 8;
+    %store/vec4 v0x6160e86492e0_0, 0, 8;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649480_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649120_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649210_0, 0, 1;
+    %delay 1, 0;
+    %load/vec4 v0x6160e86493b0_0;
+    %cmpi/e 25, 0, 8;
+    %flag_mov 8, 6;
+    %jmp/0 T_11.13, 8;
+    %pushi/vec4 1346458451, 0, 32; draw_string_vec4
+    %jmp/1 T_11.14, 8;
+T_11.13 ; End of true expr.
+    %pushi/vec4 1178683724, 0, 32; draw_string_vec4
+    %jmp/0 T_11.14, 8;
+ ; End of false expr.
+    %blend;
+T_11.14;
+    %vpi_call 2 172 "$display", "  last tick, RED->GREEN     | remaining_next=%0d (exp 25) | %s", v0x6160e86493b0_0, S<0,vec4,u32> {1 0 0};
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e8648ef0_0, 0, 2;
+    %pushi/vec4 1, 0, 2;
+    %store/vec4 v0x6160e8649050_0, 0, 2;
+    %pushi/vec4 20, 0, 8;
+    %store/vec4 v0x6160e86492e0_0, 0, 8;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649480_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649120_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649210_0, 0, 1;
+    %delay 1, 0;
+    %load/vec4 v0x6160e86493b0_0;
+    %cmpi/e 10, 0, 8;
+    %flag_mov 8, 6;
+    %jmp/0 T_11.15, 8;
+    %pushi/vec4 1346458451, 0, 32; draw_string_vec4
+    %jmp/1 T_11.16, 8;
+T_11.15 ; End of true expr.
+    %pushi/vec4 1178683724, 0, 32; draw_string_vec4
+    %jmp/0 T_11.16, 8;
+ ; End of false expr.
+    %blend;
+T_11.16;
+    %vpi_call 2 179 "$display", "  button, GREEN rem=20      | remaining_next=%0d (exp 10) | %s", v0x6160e86493b0_0, S<0,vec4,u32> {1 0 0};
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e8648ef0_0, 0, 2;
+    %pushi/vec4 1, 0, 2;
+    %store/vec4 v0x6160e8649050_0, 0, 2;
+    %pushi/vec4 6, 0, 8;
+    %store/vec4 v0x6160e86492e0_0, 0, 8;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649480_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649120_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649210_0, 0, 1;
+    %delay 1, 0;
+    %load/vec4 v0x6160e86493b0_0;
+    %cmpi/e 1, 0, 8;
+    %flag_mov 8, 6;
+    %jmp/0 T_11.17, 8;
+    %pushi/vec4 1346458451, 0, 32; draw_string_vec4
+    %jmp/1 T_11.18, 8;
+T_11.17 ; End of true expr.
+    %pushi/vec4 1178683724, 0, 32; draw_string_vec4
+    %jmp/0 T_11.18, 8;
+ ; End of false expr.
+    %blend;
+T_11.18;
+    %vpi_call 2 186 "$display", "  button, GREEN rem=6       | remaining_next=%0d (exp 1) | %s", v0x6160e86493b0_0, S<0,vec4,u32> {1 0 0};
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e8648ef0_0, 0, 2;
+    %pushi/vec4 1, 0, 2;
+    %store/vec4 v0x6160e8649050_0, 0, 2;
+    %pushi/vec4 20, 0, 8;
+    %store/vec4 v0x6160e86492e0_0, 0, 8;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649480_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649120_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649210_0, 0, 1;
+    %delay 1, 0;
+    %load/vec4 v0x6160e86493b0_0;
+    %cmpi/e 20, 0, 8;
+    %flag_mov 8, 6;
+    %jmp/0 T_11.19, 8;
+    %pushi/vec4 1346458451, 0, 32; draw_string_vec4
+    %jmp/1 T_11.20, 8;
+T_11.19 ; End of true expr.
+    %pushi/vec4 1178683724, 0, 32; draw_string_vec4
+    %jmp/0 T_11.20, 8;
+ ; End of false expr.
+    %blend;
+T_11.20;
+    %vpi_call 2 193 "$display", "  button, GREEN, latched    | remaining_next=%0d (exp 20) | %s", v0x6160e86493b0_0, S<0,vec4,u32> {1 0 0};
+    %pushi/vec4 2, 0, 2;
+    %store/vec4 v0x6160e8648ef0_0, 0, 2;
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e8649050_0, 0, 2;
+    %pushi/vec4 20, 0, 8;
+    %store/vec4 v0x6160e86492e0_0, 0, 8;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649480_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649120_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649210_0, 0, 1;
+    %delay 1, 0;
+    %load/vec4 v0x6160e86493b0_0;
+    %cmpi/e 30, 0, 8;
+    %flag_mov 8, 6;
+    %jmp/0 T_11.21, 8;
+    %pushi/vec4 1346458451, 0, 32; draw_string_vec4
+    %jmp/1 T_11.22, 8;
+T_11.21 ; End of true expr.
+    %pushi/vec4 1178683724, 0, 32; draw_string_vec4
+    %jmp/0 T_11.22, 8;
+ ; End of false expr.
+    %blend;
+T_11.22;
+    %vpi_call 2 200 "$display", "  button, RED rem=20        | remaining_next=%0d (exp 30) | %s", v0x6160e86493b0_0, S<0,vec4,u32> {1 0 0};
+    %vpi_call 2 206 "$display", "\012=== UNIT TEST: output_decoder ===" {0 0 0};
+    %pushi/vec4 2, 0, 2;
+    %store/vec4 v0x6160e86498c0_0, 0, 2;
+    %delay 1, 0;
+    %load/vec4 v0x6160e86497f0_0;
+    %pad/u 32;
+    %cmpi/e 1, 0, 32;
+    %flag_get/vec4 6;
+    %jmp/0 T_11.26, 6;
+    %load/vec4 v0x6160e8649750_0;
+    %pad/u 32;
+    %pushi/vec4 0, 0, 32;
+    %cmp/e;
+    %flag_get/vec4 6;
+    %and;
+T_11.26;
+    %flag_set/vec4 9;
+    %flag_get/vec4 9;
+    %jmp/0 T_11.25, 9;
+    %load/vec4 v0x6160e8649990_0;
+    %pad/u 32;
+    %pushi/vec4 0, 0, 32;
+    %cmp/e;
+    %flag_get/vec4 6;
+    %and;
+T_11.25;
+    %flag_set/vec4 8;
+    %jmp/0 T_11.23, 8;
+    %pushi/vec4 1346458451, 0, 32; draw_string_vec4
+    %jmp/1 T_11.24, 8;
+T_11.23 ; End of true expr.
+    %pushi/vec4 1178683724, 0, 32; draw_string_vec4
+    %jmp/0 T_11.24, 8;
+ ; End of false expr.
+    %blend;
+T_11.24;
+    %vpi_call 2 209 "$display", "  RED    | R=%b G=%b Y=%b (exp 1 0 0) | %s", v0x6160e86497f0_0, v0x6160e8649750_0, v0x6160e8649990_0, S<0,vec4,u32> {1 0 0};
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e86498c0_0, 0, 2;
+    %delay 1, 0;
+    %load/vec4 v0x6160e86497f0_0;
+    %pad/u 32;
+    %cmpi/e 0, 0, 32;
+    %flag_get/vec4 6;
+    %jmp/0 T_11.30, 6;
+    %load/vec4 v0x6160e8649750_0;
+    %pad/u 32;
+    %pushi/vec4 1, 0, 32;
+    %cmp/e;
+    %flag_get/vec4 6;
+    %and;
+T_11.30;
+    %flag_set/vec4 9;
+    %flag_get/vec4 9;
+    %jmp/0 T_11.29, 9;
+    %load/vec4 v0x6160e8649990_0;
+    %pad/u 32;
+    %pushi/vec4 0, 0, 32;
+    %cmp/e;
+    %flag_get/vec4 6;
+    %and;
+T_11.29;
+    %flag_set/vec4 8;
+    %jmp/0 T_11.27, 8;
+    %pushi/vec4 1346458451, 0, 32; draw_string_vec4
+    %jmp/1 T_11.28, 8;
+T_11.27 ; End of true expr.
+    %pushi/vec4 1178683724, 0, 32; draw_string_vec4
+    %jmp/0 T_11.28, 8;
+ ; End of false expr.
+    %blend;
+T_11.28;
+    %vpi_call 2 214 "$display", "  GREEN  | R=%b G=%b Y=%b (exp 0 1 0) | %s", v0x6160e86497f0_0, v0x6160e8649750_0, v0x6160e8649990_0, S<0,vec4,u32> {1 0 0};
+    %pushi/vec4 1, 0, 2;
+    %store/vec4 v0x6160e86498c0_0, 0, 2;
+    %delay 1, 0;
+    %load/vec4 v0x6160e86497f0_0;
+    %pad/u 32;
+    %cmpi/e 0, 0, 32;
+    %flag_get/vec4 6;
+    %jmp/0 T_11.34, 6;
+    %load/vec4 v0x6160e8649750_0;
+    %pad/u 32;
+    %pushi/vec4 0, 0, 32;
+    %cmp/e;
+    %flag_get/vec4 6;
+    %and;
+T_11.34;
+    %flag_set/vec4 9;
+    %flag_get/vec4 9;
+    %jmp/0 T_11.33, 9;
+    %load/vec4 v0x6160e8649990_0;
+    %pad/u 32;
+    %pushi/vec4 1, 0, 32;
+    %cmp/e;
+    %flag_get/vec4 6;
+    %and;
+T_11.33;
+    %flag_set/vec4 8;
+    %jmp/0 T_11.31, 8;
+    %pushi/vec4 1346458451, 0, 32; draw_string_vec4
+    %jmp/1 T_11.32, 8;
+T_11.31 ; End of true expr.
+    %pushi/vec4 1178683724, 0, 32; draw_string_vec4
+    %jmp/0 T_11.32, 8;
+ ; End of false expr.
+    %blend;
+T_11.32;
+    %vpi_call 2 219 "$display", "  YELLOW | R=%b G=%b Y=%b (exp 0 0 1) | %s", v0x6160e86497f0_0, v0x6160e8649750_0, v0x6160e8649990_0, S<0,vec4,u32> {1 0 0};
+    %vpi_call 2 226 "$display", "\012=== INTEGRATION TESTS: bhavesh_traffic_light ===" {0 0 0};
+    %wait E_0x6160e85e6810;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649bf0_0, 0, 1;
+    %pushi/vec4 4, 0, 32;
+T_11.35 %dup/vec4;
+    %pushi/vec4 0, 0, 32;
+    %cmp/s;
+    %jmp/1xz T_11.36, 5;
+    %jmp/1 T_11.36, 4;
+    %pushi/vec4 1, 0, 32;
+    %sub;
+    %wait E_0x6160e85e5220;
+    %jmp T_11.35;
+T_11.36 ;
+    %pop/vec4 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649bf0_0, 0, 1;
+    %vpi_call 2 233 "$display", "\012=== TEST 1: Reset -> GREEN ===" {0 0 0};
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e86203a0_0, 0, 2;
+    %pushi/vec4 3403956452, 0, 33;
+    %concati/vec4 1702061428, 0, 31;
+    %store/vec4 v0x6160e86201e0_0, 0, 64;
+    %fork TD_tb_traffic_light.check_state, S_0x6160e8621da0;
+    %join;
+    %vpi_call 2 237 "$display", "\012=== TEST 2: GREEN = 25 ticks, ped=0 ===" {0 0 0};
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649a60_0, 0, 1;
+    %pushi/vec4 24, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e86203a0_0, 0, 2;
+    %pushi/vec4 2178000269, 0, 34;
+    %concati/vec4 723530292, 0, 30;
+    %store/vec4 v0x6160e86201e0_0, 0, 64;
+    %fork TD_tb_traffic_light.check_state, S_0x6160e8621da0;
+    %join;
+    %pushi/vec4 1, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %pushi/vec4 1, 0, 2;
+    %store/vec4 v0x6160e86203a0_0, 0, 2;
+    %pushi/vec4 2178000269, 0, 34;
+    %concati/vec4 723530293, 0, 30;
+    %store/vec4 v0x6160e86201e0_0, 0, 64;
+    %fork TD_tb_traffic_light.check_state, S_0x6160e8621da0;
+    %join;
+    %vpi_call 2 246 "$display", "\012=== TEST 3: YELLOW = 5 ticks ===" {0 0 0};
+    %pushi/vec4 4, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %pushi/vec4 1, 0, 2;
+    %store/vec4 v0x6160e86203a0_0, 0, 2;
+    %pushi/vec4 2151737554, 0, 33;
+    %concati/vec4 1667964980, 0, 31;
+    %store/vec4 v0x6160e86201e0_0, 0, 64;
+    %fork TD_tb_traffic_light.check_state, S_0x6160e8621da0;
+    %join;
+    %pushi/vec4 1, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %pushi/vec4 2, 0, 2;
+    %store/vec4 v0x6160e86203a0_0, 0, 2;
+    %pushi/vec4 2151737554, 0, 33;
+    %concati/vec4 1667964981, 0, 31;
+    %store/vec4 v0x6160e86201e0_0, 0, 64;
+    %fork TD_tb_traffic_light.check_state, S_0x6160e8621da0;
+    %join;
+    %vpi_call 2 254 "$display", "\012=== TEST 4: RED = 30 ticks, ped=0 ===" {0 0 0};
+    %pushi/vec4 29, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %pushi/vec4 2, 0, 2;
+    %store/vec4 v0x6160e86203a0_0, 0, 2;
+    %pushi/vec4 2178000269, 0, 34;
+    %concati/vec4 723530297, 0, 30;
+    %store/vec4 v0x6160e86201e0_0, 0, 64;
+    %fork TD_tb_traffic_light.check_state, S_0x6160e8621da0;
+    %join;
+    %pushi/vec4 1, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e86203a0_0, 0, 2;
+    %pushi/vec4 2178000269, 0, 34;
+    %concati/vec4 723530544, 0, 30;
+    %store/vec4 v0x6160e86201e0_0, 0, 64;
+    %fork TD_tb_traffic_light.check_state, S_0x6160e8621da0;
+    %join;
+    %load/vec4 v0x6160e86495e0_0;
+    %cmpi/ne 25, 0, 8;
+    %jmp/0xz  T_11.37, 6;
+    %vpi_call 2 262 "$display", "\011[ASSERT] GREEN duration after unrequested RED -> FAIL" {0 0 0};
+    %jmp T_11.38;
+T_11.37 ;
+    %vpi_call 2 264 "$display", "\011[ASSERT] GREEN duration after unrequested RED -> PASS" {0 0 0};
+T_11.38 ;
+    %vpi_call 2 267 "$display", "\012=== TEST 5: Pedestrian button during GREEN -> instant shrink by 10 ===" {0 0 0};
+    %pushi/vec4 5, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %wait E_0x6160e85e6810;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649a60_0, 0, 1;
+    %wait E_0x6160e85e5220;
+    %wait E_0x6160e85e6810;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649a60_0, 0, 1;
+    %load/vec4 v0x6160e8647430_0;
+    %pad/u 32;
+    %cmpi/ne 1, 0, 32;
+    %jmp/0xz  T_11.39, 6;
+    %vpi_call 2 275 "$display", "\011[ASSERT] ped latch on GREEN press -> FAIL" {0 0 0};
+    %jmp T_11.40;
+T_11.39 ;
+    %vpi_call 2 277 "$display", "\011[ASSERT] ped latch on GREEN press -> PASS" {0 0 0};
+T_11.40 ;
+    %load/vec4 v0x6160e86495e0_0;
+    %cmpi/ne 10, 0, 8;
+    %jmp/0xz  T_11.41, 6;
+    %vpi_call 2 280 "$display", "\011[ASSERT] instant shrink to 10 -> FAIL: remaining=%0d expected=10", v0x6160e86495e0_0 {0 0 0};
+    %jmp T_11.42;
+T_11.41 ;
+    %vpi_call 2 282 "$display", "\011[ASSERT] instant shrink to 10 -> PASS" {0 0 0};
+T_11.42 ;
+    %vpi_call 2 285 "$display", "\012=== TEST 6: GREEN counts down from shrunk value (10 ticks) ===" {0 0 0};
+    %pushi/vec4 9, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e86203a0_0, 0, 2;
+    %pushi/vec4 3898271440, 0, 33;
+    %concati/vec4 1919512171, 0, 31;
+    %store/vec4 v0x6160e86201e0_0, 0, 64;
+    %fork TD_tb_traffic_light.check_state, S_0x6160e8621da0;
+    %join;
+    %pushi/vec4 1, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %pushi/vec4 1, 0, 2;
+    %store/vec4 v0x6160e86203a0_0, 0, 2;
+    %pushi/vec4 3898271440, 0, 33;
+    %concati/vec4 1919512171, 0, 31;
+    %store/vec4 v0x6160e86201e0_0, 0, 64;
+    %fork TD_tb_traffic_light.check_state, S_0x6160e8621da0;
+    %join;
+    %pushi/vec4 5, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %pushi/vec4 40, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e86203a0_0, 0, 2;
+    %pushi/vec4 3872407694, 0, 33;
+    %concati/vec4 1380271438, 0, 31;
+    %store/vec4 v0x6160e86201e0_0, 0, 64;
+    %fork TD_tb_traffic_light.check_state, S_0x6160e8621da0;
+    %join;
+    %vpi_call 2 298 "$display", "\012=== TEST 7: Pedestrian button during YELLOW -> latch request, RED=40 ===" {0 0 0};
+    %pushi/vec4 25, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %pushi/vec4 1, 0, 2;
+    %store/vec4 v0x6160e86203a0_0, 0, 2;
+    %pushi/vec4 4169229589, 0, 34;
+    %concati/vec4 206327639, 0, 30;
+    %store/vec4 v0x6160e86201e0_0, 0, 64;
+    %fork TD_tb_traffic_light.check_state, S_0x6160e8621da0;
+    %join;
+    %wait E_0x6160e85e6810;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649a60_0, 0, 1;
+    %wait E_0x6160e85e5220;
+    %wait E_0x6160e85e6810;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649a60_0, 0, 1;
+    %load/vec4 v0x6160e8647430_0;
+    %pad/u 32;
+    %cmpi/ne 1, 0, 32;
+    %jmp/0xz  T_11.43, 6;
+    %vpi_call 2 307 "$display", "\011[ASSERT] ped latch on YELLOW press -> FAIL" {0 0 0};
+    %jmp T_11.44;
+T_11.43 ;
+    %vpi_call 2 309 "$display", "\011[ASSERT] ped latch on YELLOW press -> PASS" {0 0 0};
+T_11.44 ;
+    %pushi/vec4 5, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %pushi/vec4 2, 0, 2;
+    %store/vec4 v0x6160e86203a0_0, 0, 2;
+    %pushi/vec4 2923453052, 0, 33;
+    %concati/vec4 542262596, 0, 31;
+    %store/vec4 v0x6160e86201e0_0, 0, 64;
+    %fork TD_tb_traffic_light.check_state, S_0x6160e8621da0;
+    %join;
+    %load/vec4 v0x6160e86495e0_0;
+    %cmpi/ne 40, 0, 8;
+    %jmp/0xz  T_11.45, 6;
+    %vpi_call 2 315 "$display", "\011[ASSERT] RED duration after YELLOW request -> FAIL: remaining=%0d expected=40", v0x6160e86495e0_0 {0 0 0};
+    %jmp T_11.46;
+T_11.45 ;
+    %vpi_call 2 317 "$display", "\011[ASSERT] RED duration after YELLOW request -> PASS" {0 0 0};
+T_11.46 ;
+    %pushi/vec4 40, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %vpi_call 2 322 "$display", "\012=== TEST 8: Pedestrian button during RED -> instant extend by 10 ===" {0 0 0};
+    %pushi/vec4 25, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %pushi/vec4 5, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %pushi/vec4 2, 0, 2;
+    %store/vec4 v0x6160e86203a0_0, 0, 2;
+    %pushi/vec4 3403991752, 0, 33;
+    %concati/vec4 542262596, 0, 31;
+    %store/vec4 v0x6160e86201e0_0, 0, 64;
+    %fork TD_tb_traffic_light.check_state, S_0x6160e8621da0;
+    %join;
+    %pushi/vec4 10, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %wait E_0x6160e85e6810;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649a60_0, 0, 1;
+    %wait E_0x6160e85e5220;
+    %wait E_0x6160e85e6810;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649a60_0, 0, 1;
+    %load/vec4 v0x6160e8647430_0;
+    %pad/u 32;
+    %cmpi/ne 1, 0, 32;
+    %jmp/0xz  T_11.47, 6;
+    %vpi_call 2 334 "$display", "\011[ASSERT] ped latch on RED press -> FAIL" {0 0 0};
+    %jmp T_11.48;
+T_11.47 ;
+    %vpi_call 2 336 "$display", "\011[ASSERT] ped latch on RED press -> PASS" {0 0 0};
+T_11.48 ;
+    %load/vec4 v0x6160e86495e0_0;
+    %cmpi/ne 30, 0, 8;
+    %jmp/0xz  T_11.49, 6;
+    %vpi_call 2 339 "$display", "\011[ASSERT] instant RED extension to 30 -> FAIL: remaining=%0d expected=30", v0x6160e86495e0_0 {0 0 0};
+    %jmp T_11.50;
+T_11.49 ;
+    %vpi_call 2 341 "$display", "\011[ASSERT] instant RED extension to 30 -> PASS" {0 0 0};
+T_11.50 ;
+    %pushi/vec4 30, 0, 32;
+    %store/vec4 v0x6160e8647e60_0, 0, 32;
+    %fork TD_tb_traffic_light.fire_ticks, S_0x6160e8647bd0;
+    %join;
+    %pushi/vec4 0, 0, 2;
+    %store/vec4 v0x6160e86203a0_0, 0, 2;
+    %pushi/vec4 3036184861, 0, 34;
+    %concati/vec4 306529614, 0, 30;
+    %store/vec4 v0x6160e86201e0_0, 0, 64;
+    %fork TD_tb_traffic_light.check_state, S_0x6160e8621da0;
+    %join;
+    %vpi_call 2 347 "$display", "\012=== TEST 9: holding ped_button during GREEN only shrinks once ===" {0 0 0};
+    %wait E_0x6160e85e6810;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x6160e8649a60_0, 0, 1;
+    %wait E_0x6160e85e5220;
+    %delay 1, 0;
+    %load/vec4 v0x6160e86495e0_0;
+    %cmpi/ne 15, 0, 8;
+    %jmp/0xz  T_11.51, 6;
+    %vpi_call 2 353 "$display", "\011[ASSERT] shrink by 10 on first press (expected 15) -> FAIL: remaining=%0d", v0x6160e86495e0_0 {0 0 0};
+    %jmp T_11.52;
+T_11.51 ;
+    %vpi_call 2 355 "$display", "\011[ASSERT] shrink by 10 on first press (expected 15) -> PASS" {0 0 0};
+T_11.52 ;
+    %pushi/vec4 4, 0, 32;
+T_11.53 %dup/vec4;
+    %pushi/vec4 0, 0, 32;
+    %cmp/s;
+    %jmp/1xz T_11.54, 5;
+    %jmp/1 T_11.54, 4;
+    %pushi/vec4 1, 0, 32;
+    %sub;
+    %wait E_0x6160e85e5220;
+    %jmp T_11.53;
+T_11.54 ;
+    %pop/vec4 1;
+    %load/vec4 v0x6160e86495e0_0;
+    %cmpi/ne 15, 0, 8;
+    %jmp/0xz  T_11.55, 6;
+    %vpi_call 2 360 "$display", "\011[ASSERT] remaining stays at 15 while button held -> FAIL: remaining=%0d", v0x6160e86495e0_0 {0 0 0};
+    %jmp T_11.56;
+T_11.55 ;
+    %vpi_call 2 362 "$display", "\011[ASSERT] remaining stays at 15 while button held -> PASS" {0 0 0};
+T_11.56 ;
+    %wait E_0x6160e85e6810;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x6160e8649a60_0, 0, 1;
+    %vpi_call 2 366 "$display", "\012=== All tests complete ===\012" {0 0 0};
+    %vpi_call 2 367 "$finish" {0 0 0};
+    %end;
+    .thread T_11;
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "task1/tb_task1.v";
+    "task1/traffic_fsm.v";

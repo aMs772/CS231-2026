@@ -1,16 +1,22 @@
-## Schedule
+## Schedule \& Links
 
 **Slot**     : L4 (Friday 2pm - 5pm)
 
 **Location** : SL-1, SL-2, SL-3
 
-**Feedback Form** : [CS231 Mega Feedback Form](https://forms.gle/SwjpLZEidyc4rwYK7)
+[**CS231 Seating Arrangement**](https://docs.google.com/spreadsheets/d/1tayAATniMwQ7fh3_62BuHnNRad7Ltvios91gzEG3gZ0/edit?usp=sharing) 
 
-**Seating - Arrangement** : [CS-231 Lab Allocation](https://docs.google.com/spreadsheets/d/1tayAATniMwQ7fh3_62BuHnNRad7Ltvios91gzEG3gZ0/edit?usp=sharing)
+---
 
-**Crib Form** : [\[CS231\] Re-Evaluation Request Form](https://docs.google.com/forms/d/e/1FAIpQLSfki4vqrKC4cpkJJB3ldHS-DOxl_E4kSprBl13Kh58UfaA6ng/viewform?usp=header)
+[**CS231 Mega Feedback Form**](https://forms.gle/SwjpLZEidyc4rwYK7)
 
-**Leave Absence Form**: [Leave Request Form](https://forms.gle/5RyNdPokXHe5WkaB6)
+[**CS231 LabQuiz1 Crib Form**](https://forms.gle/Z7eurtrXLGE7ccvEA)
+
+[**CS231 Inlab Re-Evaluation Request Form**](https://docs.google.com/forms/d/e/1FAIpQLSfki4vqrKC4cpkJJB3ldHS-DOxl_E4kSprBl13Kh58UfaA6ng/viewform?usp=header)
+
+[**CS231 Leave Request Form**](https://forms.gle/5RyNdPokXHe5WkaB6)
+
+---
 
 <table>
   <thead>
@@ -84,28 +90,30 @@
       <td>09 October</td>
       <td> <a href=""> </a> </td>
     </tr>
-    <!-- Block 5: 1 Row (Quiz) -->
-    <tr>
-      <td>--</td>
-      <td>16 October</td>
-      <td colspan="3"><strong>Lab Quiz 2</strong></td>
-    </tr>
-    <!-- Block 6: 3 Rows -->
+    <!-- Block 5: 2 Rows -->
     <tr>
       <td>9</td>
-      <td>23 October</td>
-      <td rowspan="3">Champ-Sim</td>
-      <!-- <td rowspan="3">Champ-Sim Resources</td> -->
+      <td>16 October</td>
+      <td rowspan="2">Champ-Sim</td>
+      <!-- <td rowspan="2">Champ-Sim Resources</td> -->
       <td> <a href=""> </a> </td>
     </tr>
     <tr>
       <td>10</td>
-      <td>30 October</td>
+      <td>23 October</td>
       <td> <a href=""> </a> </td>
     </tr>
+    <!-- Block 6: 1 Row (Quiz) -->
+    <tr>
+      <td>--</td>
+      <td>30 October</td>
+      <td colspan="3"><strong>Lab Quiz 2</strong></td>
+    </tr>
+    <!-- Block 7: 1 Row -->
     <tr>
       <td>11</td>
       <td>06 November</td>
+      <td>Champ-Sim</td>
       <td> <a href=""> </a> </td>
     </tr>
     <!-- Quiz 3 -->

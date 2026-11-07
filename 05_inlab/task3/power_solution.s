@@ -27,7 +27,7 @@ pow_naive:
     mulsd xmm0, xmm0       ; next base = base * base
     shr rdi, 1              ; next exponent = exponent / 2
     call pow_naive
-
+    
     mov rax, [rsp+8]
     movsd xmm1, [rsp]
     add rsp, 16

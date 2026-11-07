@@ -22,6 +22,8 @@ _start:
 ;   Find the dot product of vec1 and vec2 (as doubles), truncate it toward
 ;   zero, and put the result in `rdi`
 
+; lines 24, 34
+
 ; this instruction just truncates the decimal to an integer and stores it in rdi (don't mind it)
     cvttsd2si rdi, xmm0
 

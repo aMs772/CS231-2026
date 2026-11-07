@@ -16,5 +16,7 @@ _start:
 ;   for each byte c in `text`), then exit with the highest count found
 ;   in `counts`
 
+; line 7, 21, 22, 34
+
     mov rax, 60
     syscall

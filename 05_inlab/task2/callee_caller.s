@@ -14,6 +14,8 @@ section .text
 ; that gives you no guarantees beyond what the ABI actually promises.
 func_callee:
 
+; line 17
+
     ret
 
 ; func_caller() -> rax

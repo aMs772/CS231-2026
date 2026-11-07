@@ -9,6 +9,8 @@ section .text
 ; my_strlen(const char* str{rdi}) -> rax (not counting the null terminator)
 my_strlen:
 
+; lines 13,
+
     ret
 
 ; my_atoi(const char* str{rdi}) -> rax (handles an optional leading '-')
